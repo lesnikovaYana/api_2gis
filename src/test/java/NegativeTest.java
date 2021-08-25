@@ -11,16 +11,19 @@ import static org.hamcrest.Matchers.equalTo;
 
 public class NegativeTest extends BaseTest{
 
-    //TODO обработать ошибку ноль
     @ParameterizedTest
     @NullSource
     @ValueSource(strings = {"999999999999999999999", "0", "3.0", "test", "-1", "01", "2 5", " 5", "9 ",
     "-999999999999999999999"})
     void getRegionsPageNegativeTest(String i){
-        HttpResponse<JsonNode> response = Unirest.get("")
+
+        Unirest.get("")
                 .queryString("page", i)
-                .asJson();
-        assertThat(response.isSuccess(), CoreMatchers.is(true));
-        assertThat(response.getStatus(), equalTo(200));
+                .asJson()
+                .ifSuccess(jsonResponse -> assertThat(jsonResponse.getStatus(), equalTo(200)))
+                .ifFailure(jsonResponse -> {System.out.println(jsonResponse.getStatus());
+                jsonResponse.getParsingError().ifPresent(e -> System.out.println("Error body: " + e.getOriginalBody()));});
     }
+
+
 }

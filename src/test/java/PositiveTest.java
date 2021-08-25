@@ -9,6 +9,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.notNullValue;
 
 public class PositiveTest extends BaseTest{
     @Test
@@ -16,8 +17,8 @@ public class PositiveTest extends BaseTest{
         HttpResponse<JsonNode> response = Unirest.get("")
                 .asJson();
         int total = response.getBody().getObject().getInt("total");
-        //int s = response.getBody().getObject().getJSONArray("items").length();
-        //System.out.println(s);
+        //int s = response.getBody().getObject().getJSONArray("items").length(); использовать для подсчета page size
+       // assertThat(response.getBody().getArray(), CoreMatchers.is(notNullValue()));
         assertThat(response.getStatus(), equalTo(200));
         assertThat(total, equalTo(22));
     }
@@ -35,10 +36,12 @@ public class PositiveTest extends BaseTest{
     @ParameterizedTest
     @ValueSource(ints = {1, 2, 3, 100, 57, 7999})
     void getRegionsPagePositiveTest(int i){
-        HttpResponse<JsonNode> response = Unirest.get("")
+       Unirest.get("")
                 .queryString("page", i)
-                .asJson();
-        assertThat(response.isSuccess(), CoreMatchers.is(true));
-        assertThat(response.getStatus(), equalTo(200));
+                .asJson()
+                .ifSuccess(jsonResponse -> assertThat(jsonResponse.getStatus(), equalTo(200)))
+                .ifFailure(jsonResponse -> {
+                    System.out.println(jsonResponse.getStatus());
+                });
     }
 }
