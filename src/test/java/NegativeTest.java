@@ -21,9 +21,7 @@ public class NegativeTest extends BaseTest{
                 .queryString("page", i)
                 .asJson()
                 .ifSuccess(jsonResponse -> assertThat(jsonResponse.getStatus(), equalTo(200)))
-                .ifFailure(jsonResponse -> {System.out.println(jsonResponse.getStatus());
-                jsonResponse.getParsingError().ifPresent(e -> System.out.println("Error body: " + e.getOriginalBody()));});
+                .ifFailure(jsonResponse -> {logger.error(jsonResponse.getStatus());
+                jsonResponse.getParsingError().ifPresent(e -> logger.error("Error body: " + e.getOriginalBody()));});
     }
-
-
 }

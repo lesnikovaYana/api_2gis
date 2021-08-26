@@ -24,13 +24,15 @@ public class PositiveTest extends BaseTest{
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"вла"})
+    @ValueSource(strings = {"влад", "Актобе", "Уфа", "Омск", "бирск", "москва"})
     void getCodeRegionSearchPositiveTest(String i){
-        HttpResponse<JsonNode> response = Unirest.get("")
+        Unirest.get("")
                 .queryString("q", i)
-                .asJson();
-        assertThat(response.isSuccess(), CoreMatchers.is(true));
-        assertThat(response.getStatus(), equalTo(200));
+                .asJson()
+                .ifSuccess(jsonResponse -> assertThat(jsonResponse.getStatus(), equalTo(200)))
+                .ifFailure(jsonResponse -> {
+                    System.out.println(jsonResponse.getStatus());
+                });
     }
 
     @ParameterizedTest
