@@ -1,5 +1,3 @@
-import kong.unirest.HttpResponse;
-import kong.unirest.JsonNode;
 import kong.unirest.Unirest;
 import kong.unirest.json.JSONArray;
 import org.hamcrest.CoreMatchers;
@@ -8,12 +6,11 @@ import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.*;
 
 public class NegativeTest extends BaseTest{
 
-    //TODO доделать негативные тесты
+    //TODO поменять error и total местами?
     @ParameterizedTest
     @NullSource
     @ValueSource(strings = {"ТОМСК", "moscow", "тест", "Ош", " ", "~!@#$%^&*()?>,./",
@@ -23,17 +20,18 @@ public class NegativeTest extends BaseTest{
                 .queryString("q", i)
                 .asJson()
                 .ifSuccess(jsonResponse -> {
+                    try {
                         assertThat(jsonResponse.getStatus(), equalTo(200));
-                        //assertThat(jsonResponse.getBody().getArray(), CoreMatchers.is(notNullValue()));
-                        //JSONArray array = jsonResponse.getBody().getObject().getJSONArray("items");
-                        //assertThat(array.length(),CoreMatchers.is(notNullValue()));
+                        assertThat(jsonResponse.getBody().getObject().getInt("total"), equalTo(22));
+                    }catch (Exception e){
                         assertThat(jsonResponse.getBody().getObject().get("error"), CoreMatchers.is(notNullValue()));
+                        logger.error(e.getMessage());
+                    }
                 })
                 .ifFailure(jsonResponse -> {logger.error(jsonResponse.getStatus());
                     jsonResponse.getParsingError().ifPresent(e -> logger.error("Error body: " + e.getOriginalBody()));});
     }
 
-    //TODO разделить обрабатываемые ошибки и обычные запросы
     @ParameterizedTest
     @NullSource
     @ValueSource(strings = {"999999999999999999999", "0", "3.0", "test", "-1", "01", "2 5", " 5", "9 ",
@@ -43,14 +41,18 @@ public class NegativeTest extends BaseTest{
                 .queryString("page", i)
                 .asJson()
                 .ifSuccess(jsonResponse -> {
-                    assertThat(jsonResponse.getStatus(), equalTo(200));
-                    assertThat(jsonResponse.getBody().getObject().get("error"), CoreMatchers.is(notNullValue()));
+                    try {
+                        assertThat(jsonResponse.getStatus(), equalTo(200));
+                        assertThat(jsonResponse.getBody().getObject().getInt("total"), equalTo(22));
+                    }catch (Exception e){
+                        assertThat(jsonResponse.getBody().getObject().get("error"), CoreMatchers.is(notNullValue()));
+                        logger.error(e.getMessage());
+                    }
                 })
                 .ifFailure(jsonResponse -> {logger.error(jsonResponse.getStatus());
                 jsonResponse.getParsingError().ifPresent(e -> logger.error("Error body: " + e.getOriginalBody()));});
     }
 
-    //TODO попробовать через for и try catch
     @ParameterizedTest
     @NullSource
     @ValueSource(strings = {"999999999999999999999", "0", "3.0", "test", "-1", "01", "1 5", " 5", "10 ",
@@ -60,8 +62,14 @@ public class NegativeTest extends BaseTest{
                 .queryString("page_size", i)
                 .asJson()
                 .ifSuccess(jsonResponse -> {
-                     assertThat(jsonResponse.getStatus(), equalTo(200));
-                     assertThat(jsonResponse.getBody().getObject().get("error"), CoreMatchers.is(notNullValue()));})
+                    try {
+                        assertThat(jsonResponse.getStatus(), equalTo(200));
+                        assertThat(jsonResponse.getBody().getObject().getInt("total"), equalTo(22));
+                    }catch (Exception e){
+                        assertThat(jsonResponse.getBody().getObject().get("error"), CoreMatchers.is(notNullValue()));
+                        logger.error(e.getMessage());
+                    }
+                })
                 .ifFailure(jsonResponse -> {
                     logger.error(jsonResponse.getStatus());
                 });
@@ -75,8 +83,13 @@ public class NegativeTest extends BaseTest{
                 .queryString("country_code", i)
                 .asJson()
                 .ifSuccess(jsonResponse -> {
-                    assertThat(jsonResponse.getStatus(), equalTo(200));
-                    assertThat(jsonResponse.getBody().getObject().get("error"), CoreMatchers.is(notNullValue()));
+                    try {
+                        assertThat(jsonResponse.getStatus(), equalTo(200));
+                        assertThat(jsonResponse.getBody().getObject().getInt("total"), equalTo(22));
+                    }catch (Exception e){
+                        assertThat(jsonResponse.getBody().getObject().get("error"), CoreMatchers.is(notNullValue()));
+                        logger.error(e.getMessage());
+                    }
                 })
                 .ifFailure(jsonResponse -> {
                     logger.error(jsonResponse.getStatus());
