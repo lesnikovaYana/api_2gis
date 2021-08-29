@@ -10,11 +10,10 @@ import static org.hamcrest.Matchers.*;
 
 public class NegativeTest extends BaseTest{
 
-    //TODO поменять error и total местами?
     @ParameterizedTest
     @NullSource
     @ValueSource(strings = {"ТОМСК", "moscow", "тест", "Ош", " ", "~!@#$%^&*()?>,./",
-            "Уилла Реал де ла Санта-Фе де Сан-Франциско де Асис"})
+            "Посёлок центральной усадьбы совхоза 40 лет Октября", " Омск", "Омск "})
     void getNameRegionSearchNegativeTest(String i){
         Unirest.get("")
                 .queryString("q", i)
@@ -22,7 +21,11 @@ public class NegativeTest extends BaseTest{
                 .ifSuccess(jsonResponse -> {
                     try {
                         assertThat(jsonResponse.getStatus(), equalTo(200));
-                        assertThat(jsonResponse.getBody().getObject().getInt("total"), equalTo(22));
+                        JSONArray array = jsonResponse.getBody().getObject().getJSONArray("items");
+                        for(int j=0;j<array.length();j++){
+                            String object = array.getJSONObject(j).getString("name");
+                            assertThat(object,containsStringIgnoringCase(i));
+                        }
                     }catch (Exception e){
                         assertThat(jsonResponse.getBody().getObject().get("error"), CoreMatchers.is(notNullValue()));
                         logger.error(e.getMessage());
@@ -43,7 +46,7 @@ public class NegativeTest extends BaseTest{
                 .ifSuccess(jsonResponse -> {
                     try {
                         assertThat(jsonResponse.getStatus(), equalTo(200));
-                        assertThat(jsonResponse.getBody().getObject().getInt("total"), equalTo(22));
+                        assertThat(jsonResponse.getBody().getObject().getJSONArray("items"), CoreMatchers.is(notNullValue()));
                     }catch (Exception e){
                         assertThat(jsonResponse.getBody().getObject().get("error"), CoreMatchers.is(notNullValue()));
                         logger.error(e.getMessage());
@@ -56,7 +59,7 @@ public class NegativeTest extends BaseTest{
     @ParameterizedTest
     @NullSource
     @ValueSource(strings = {"999999999999999999999", "0", "3.0", "test", "-1", "01", "1 5", " 5", "10 ",
-            "-999999999999999999999", " ", "16"})
+            "-999999999999999999999", " ", "16", "1"})
     void getRegionsPageSizeNegativeTest(String i){
         Unirest.get("")
                 .queryString("page_size", i)
@@ -64,7 +67,7 @@ public class NegativeTest extends BaseTest{
                 .ifSuccess(jsonResponse -> {
                     try {
                         assertThat(jsonResponse.getStatus(), equalTo(200));
-                        assertThat(jsonResponse.getBody().getObject().getInt("total"), equalTo(22));
+                        assertThat(jsonResponse.getBody().getObject().getJSONArray("items").length(), equalTo(i));
                     }catch (Exception e){
                         assertThat(jsonResponse.getBody().getObject().get("error"), CoreMatchers.is(notNullValue()));
                         logger.error(e.getMessage());
@@ -77,7 +80,7 @@ public class NegativeTest extends BaseTest{
 
     @ParameterizedTest
     @NullSource
-    @ValueSource(strings = {"ua", "RU", "тест", "ca", "y", " ", "~!@#$%^&*()?>,./"})
+    @ValueSource(strings = {"ua", "RU", "тест", "ca", "g", " ", "~!@#$%^&*()?>,./", "ее"})
     void getRegionsCountryCodeNegativeTest(String i) {
         Unirest.get("")
                 .queryString("country_code", i)
@@ -85,7 +88,11 @@ public class NegativeTest extends BaseTest{
                 .ifSuccess(jsonResponse -> {
                     try {
                         assertThat(jsonResponse.getStatus(), equalTo(200));
-                        assertThat(jsonResponse.getBody().getObject().getInt("total"), equalTo(22));
+                        JSONArray array = jsonResponse.getBody().getObject().getJSONArray("items");
+                        for(int j=0;j<array.length();j++){
+                            String object = array.getJSONObject(j).getJSONObject("country").getString("code");
+                            assertThat(object,equalTo(i));
+                        }
                     }catch (Exception e){
                         assertThat(jsonResponse.getBody().getObject().get("error"), CoreMatchers.is(notNullValue()));
                         logger.error(e.getMessage());
