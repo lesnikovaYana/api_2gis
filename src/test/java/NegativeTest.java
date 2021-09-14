@@ -37,7 +37,7 @@ public class NegativeTest extends BaseTest{
 
     @ParameterizedTest
     @NullSource
-    @ValueSource(strings = {"999999999999999999999", "0", "3.0", "test", "-1", "01", "2 5", " 5", "9 ",
+    @ValueSource(strings = {"999999999999999999999", "0", "3.0", "2,0", "test", "-1", "01", "2 5", " 5", "9 ",
     "-999999999999999999999", " "})
     void getRegionsPageNegativeTest(String i){
         Unirest.get("")
@@ -58,7 +58,7 @@ public class NegativeTest extends BaseTest{
 
     @ParameterizedTest
     @NullSource
-    @ValueSource(strings = {"999999999999999999999", "0", "3.0", "test", "-1", "01", "1 5", " 5", "10 ",
+    @ValueSource(strings = {"999999999999999999999", "0", "1.0", "1,5", "test", "-1", "01", "1 5", " 5", "10 ",
             "-999999999999999999999", " ", "16", "1"})
     void getRegionsPageSizeNegativeTest(String i){
         Unirest.get("")
