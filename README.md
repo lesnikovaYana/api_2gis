@@ -11,7 +11,7 @@
 * log4j, библиотека логирования Java-программ.
 
 ### Интелект-карта тестирования API
-![Image](https://imgur.com/dGFqFZv)
+![Image](https://imgur.com/dGFqFZv) 
 
 ### Баг-репорты к тестовому API
 > [Ссылка на Google Docs](https://docs.google.com/document/d/1CNZN0AmlH2KcNvQYGW4z5x9cfnMwsi3s/edit?usp=sharing&ouid=107879533407522950453&rtpof=true&sd=true)
